@@ -72,6 +72,7 @@ class TrackUpdate(models.Model):
     @classmethod
     def create_from_lastfm(cls, user):
         page = 1
+        total = 0
         while page:
             print('-- page %s' % page)
             tracks = requests.get(
@@ -138,6 +139,7 @@ class TrackUpdate(models.Model):
                     # page = 0
                     # break
                 else:
+                    total += 1
                     print('[%s] "%s" by "%s"' % (
                         datetime.fromtimestamp(int(track['date']['uts'])),
                         track['name'],
@@ -145,3 +147,4 @@ class TrackUpdate(models.Model):
                     ))
 
             time.sleep(1)
+        print('-- %s created' % total)
