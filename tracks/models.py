@@ -85,7 +85,22 @@ class TrackUpdate(models.Model):
                     'user': user,
                 }
             ).json()
-            page += 1
+
+            if 'error' in tracks:
+                # "Most likely the backend service failed. Please try again."
+                if tracks['error'] == 8:
+                    print('-- error 8, sleeping before retrying')
+                    time.sleep(30)
+                    continue
+
+                # "Your request is missing a required parameter"
+                if tracks['error'] == 6:
+                    if page != 1:
+                        print('-- error 6, sleeping before retrying')
+                        time.sleep(30)
+                        continue
+                    else:
+                        raise KeyError
 
             if not 'recenttracks' in tracks:
                 pp(tracks)
@@ -96,6 +111,7 @@ class TrackUpdate(models.Model):
 
             print('--', tracks['recenttracks']['track'][0]['date']['#text'])
 
+            page += 1
             for track in tracks['recenttracks']['track']:
                 timestamp = make_aware(
                     datetime.fromtimestamp(int(track['date']['uts']))
