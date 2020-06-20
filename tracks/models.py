@@ -110,10 +110,12 @@ class TrackUpdate(models.Model):
             if len(tracks['recenttracks']['track']) == 0:
                 break
 
-            print('--', tracks['recenttracks']['track'][0]['date']['#text'])
-
             page += 1
             for track in tracks['recenttracks']['track']:
+                if '@attr' in track and 'nowplaying' in track['@attr']:
+                    # "now playing" isn't a scrobble ... yet
+                    continue
+
                 timestamp = make_aware(
                     datetime.fromtimestamp(int(track['date']['uts']))
                 )
