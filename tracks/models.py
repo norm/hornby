@@ -70,7 +70,7 @@ class TrackUpdate(models.Model):
     )
 
     @classmethod
-    def create_from_lastfm(cls, user):
+    def create_from_lastfm(cls, user, full=False):
         page = 1
         total = 0
         while page:
@@ -134,17 +134,19 @@ class TrackUpdate(models.Model):
                     id=id,
                     defaults=update,
                 )
-                if not created:
-                    pass
-                    # page = 0
-                    # break
-                else:
+                if created:
                     total += 1
                     print('[%s] "%s" by "%s"' % (
                         datetime.fromtimestamp(int(track['date']['uts'])),
                         track['name'],
                         track['artist']['#text'],
                     ))
+                elif full:
+                    pass
+                else:
+                    # exit the loop, we've run out of new scrobbles
+                    page = 0
+                    break
 
             time.sleep(1)
         print('-- %s created' % total)

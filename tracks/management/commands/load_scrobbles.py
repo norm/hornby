@@ -9,6 +9,15 @@ class Command(BaseCommand):
             'user',
             help="Load USER's scrobbles from last.fm"
         )
+        parser.add_argument(
+            '--full',
+            action='store_true',
+            help=(
+                'Keep trying to load more scrobbles, even once duplciates '
+                'start to be found. Most useful when the initial load '
+                'failed or was interrupted.'
+            )
+        )
 
     def handle(self, *args, **options):
         TrackUpdate.create_from_lastfm(options['user'])
